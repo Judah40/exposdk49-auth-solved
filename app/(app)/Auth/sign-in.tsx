@@ -5,7 +5,7 @@ import { user } from '../../../useContext'
 const signin = () => {
     const {user, login,logout} = useAuth()
     const handleLogin = () => {
-        const newUser:user={usename:"Judah", password:"alvin", userToken:"bhdgbfjdsfhjsvjfjdbjkf"}
+        const newUser:user={usename:"Judah", password:"alvin", userToken:"bhdgbfjdsfhjsvjfjdbjkf", user:"doc"}
         login(newUser)
     }
 

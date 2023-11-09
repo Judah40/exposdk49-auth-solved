@@ -11,6 +11,7 @@ export type user = {
   usename: string;
   password: string;
   userToken: string;
+  user:string
 };
 
 type AuthContextType = {
@@ -29,8 +30,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [user, setUser] = useState<user | null>(null);
   const router = useRouter();
 
+  const [token, setToken]= useState<string|any>("")
+
+  const getToken=async()=>{
+    const token = await secureStore.getItemAsync("token");
+    setToken(token||null)
+  }
   const login = (newUser: user) => {
     setUser(newUser);
+    secureStore.setItemAsync("token", newUser.userToken);
+    secureStore.setItemAsync("user", newUser.user);
+
+    if(newUser.user==="doc"){
+        return router.push("/tabs/doc");
+
+    }
+    if(newUser.user==="patient"){
+        return router.push("/tabs/patient");
+
+    }
     router.push("/tabs");
     secureStore.setItemAsync("token", newUser.userToken);
   };
@@ -39,19 +57,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setUser(null);
     router.push("/Auth");
     secureStore.deleteItemAsync("token");
+    secureStore.deleteItemAsync("user");
   };
 
   const authUser = async () => {
-    const token = await secureStore.getItemAsync("token");
-    console.log(token)
-    if (token) {
-     return router.push("/tabs");
+    const type = await secureStore.getItemAsync("user");
+   
+    if ( type==="doc") {
+       
+     return router.push("/tabs/doc");
+    }
+    if( type==="patient"){
+        return router.push("/tabs/patient");
+
     }
     return router.push("/Auth");
   };
   useEffect(() => {
+    getToken()
     authUser();
-  }, []);
+  }, [user]);
   return (
     <userContext.Provider value={{ user, login, logout }}>
       {children}
